@@ -1,8 +1,9 @@
 class PagerDevice {
   constructor () {
+    this.duplex = false
     this.name = "_base"
   }
-  formatTX(msg) {
-  }
+  async formatTX(msg) { }
+  RandID() { }
 }
 module.exports = PagerDevice

@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/smartpager-network/pocsag-daemon#readme",
   "dependencies": {
+    "@supercharge/strings": "^1.18.0",
     "amqp-connection-manager": "^3.2.2",
     "amqplib": "^0.7.0"
   }

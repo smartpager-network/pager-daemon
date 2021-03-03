@@ -3,7 +3,7 @@ class Connector {
     this.amqpConnMngr = amqpConnMngr
     this.name = "_base"
   }
-  transmitMessage(msg) {
+  async transmitMessage(msg, params) {
     throw "not implemented"
   }
 }

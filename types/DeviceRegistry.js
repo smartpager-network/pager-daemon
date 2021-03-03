@@ -1,5 +1,3 @@
-const { GenericPager, BirdySlim } = require("./devices")
-
 class DeviceRegistry {
     constructor() {
         this.Devices = {}
@@ -9,6 +7,4 @@ class DeviceRegistry {
     }
 }
 const registry = new DeviceRegistry()
-registry.register(new GenericPager())
-registry.register(new BirdySlim())
 module.exports = registry
