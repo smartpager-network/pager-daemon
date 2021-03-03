@@ -1,0 +1,6 @@
+class RouteablePage {
+    id
+
+    constructor() {
+    }
+}

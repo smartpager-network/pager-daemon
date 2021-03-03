@@ -1,0 +1,23 @@
+{
+  "name": "pocsag-daemon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smartpager-network/pocsag-daemon.git"
+  },
+  "author": "catSIXe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/smartpager-network/pocsag-daemon/issues"
+  },
+  "homepage": "https://github.com/smartpager-network/pocsag-daemon#readme",
+  "dependencies": {
+    "amqp-connection-manager": "^3.2.2",
+    "amqplib": "^0.7.0"
+  }
+}
