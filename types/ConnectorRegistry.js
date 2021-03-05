@@ -11,6 +11,10 @@ class ConnectorRegistry {
         if (!this.Connectors[ name ]) throw "not registred"
         this.Connectors[ name ].transmitMessage(msg, params)
     }
+    supportDuplex(name) {
+        if (!this.Connectors[ name ]) throw "not registred"
+        return this.Connectors[ name ].duplexCapable
+    }
 }
 const registry = new ConnectorRegistry()
 module.exports = registry

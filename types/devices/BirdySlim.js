@@ -1,4 +1,5 @@
 const PagerDevice = require("./Device")
+const Str = require('@supercharge/strings')
 
 // Birdy Slim (IoT) Device
 class BirdySlim extends PagerDevice {
@@ -15,9 +16,7 @@ class BirdySlim extends PagerDevice {
         await MessageManager.BindMsg(msg)
         msg.payload = `${ msg.id }${ msg.payload }`
         msg._routerData = {
-            recvAck: true,
-            readAck: true,
-            response: true,
+            duplexCapable: true,
         }
     }
 }

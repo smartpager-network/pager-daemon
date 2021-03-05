@@ -14,11 +14,8 @@ class GenericPager extends PagerDevice {
   async formatTX(msg) {
     msg.id = this.RandID()
     await MessageManager.BindMsg(msg)
-    msg.payload = `${ msg.id }${ msg.payload }`
     msg._routerData = {
-      recvAck: false,
-      readAck: false,
-      response: false,
+      duplexCapable: false,
     }
     // return msg
   }
