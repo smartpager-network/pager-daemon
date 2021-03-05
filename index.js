@@ -262,7 +262,7 @@ function calculateSkyperKey(ric, month, year) {
     }).join('');
   
     return key;
-  }
+}
 function skyperActivation(RIC) { // send with functioncode C(2)
     let activationMsg = ""
     let activationSequences = [[0,7,50],[0,7,34],[0,7,53],[0,7,51],[0,7,51],[0,7,52],[0,7,52],[0,7,56]]
@@ -283,8 +283,7 @@ async function main2() {
     skyperTest.push('4512:1' + String.fromCharCode(0x1f + 8) + String.fromCharCode(0x20 + 10) + "Rubrik 8")
     skyperTest.push('4512:1' + String.fromCharCode(0x1f + 9) + String.fromCharCode(0x20 + 10) + "Rubrik 9")
     skyperTest.push('4512:1' + String.fromCharCode(0x1f + 10) + String.fromCharCode(0x20 + 10) + "Rubrik 10")
-*/
-/*
+
     skyperTest.push('4520:1' + String.fromCharCode(0x1f + 1) + String.fromCharCode(0x20 + 0) + "Rubrik 1 Nachricht Slot 0")
     skyperTest.push('4520:1' + String.fromCharCode(0x1f + 2) + String.fromCharCode(0x20 + 1) + "Rubrik 2 Nachricht Slot 1")
     skyperTest.push('4520:1' + String.fromCharCode(0x1f + 3) + String.fromCharCode(0x20 + 2) + "Rubrik 3 Nachricht Slot 2")
@@ -302,15 +301,13 @@ async function main2() {
         await types.MessageManager.Deliver(id)
     }
     */
-
+/*
     let id2 = await types.MessageManager.New('simple', { device: 'generic', connectors: [
         ['pocsag', '077174D']
-    ] }, "Hallo " + (new Date()).toUTCString())
+    ] }, "Netwerktestbericht")
     console.log('msgid', id2)
     await types.MessageManager.Deliver(id2)
-
-/*
-    */
+*/
     // activating the skyper
     const routingHeader = {
         device: 'skyper',
@@ -361,7 +358,3 @@ main2()
     ],
 } */
 app.listen(3000)
-/*types.ConnectorRegistry.transmit("pocsag", {
-    ric: '133701',
-    body: "AAAAhh, ich\n\n\n\nHabe einen Sprung"
-})*/
