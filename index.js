@@ -19,7 +19,7 @@ const bodyParser = require('body-parser')
 const app = express()
 app.use(bodyParser.json())
 /*app.get('/api/message/easy', async (req, res) => {})*/
-app.get('/api/message/advanced', async (req, res) => {
+app.post('/api/message/advanced', async (req, res) => {
     if (!req.body.type) return res.status(500).json("ERROR: no msg type(simple,duplex)")
     if (!req.body.payload) return res.status(500).json("ERROR: no msg payload")
     if (!req.body.routing) return res.status(500).json("ERROR: no msg routing")
@@ -28,4 +28,5 @@ app.get('/api/message/advanced', async (req, res) => {
     await types.MessageManager.Deliver(id)
     return res.json(id)
 })
+
 app.listen(3000)
