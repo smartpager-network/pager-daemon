@@ -1,14 +1,22 @@
 const amqp = require('amqp-connection-manager')
+const config = require('./config.json')
 
 // Create a connetion manager
-const connection = amqp.connect([
-    'amqp://daemon:daemon@10.13.37.37:5672/'
-])
+const connection = amqp.connect(config.general.amqp)
 connection.on('connect', () => console.log('Connected to AMQP.'))
 connection.on('disconnect', err => console.log('Disconnected from AMQP.', err.stack))
 
 const types = require('./types') // also initializes the registries, if they havent been loaded
-types.ConnectorRegistry.register(new types.Connectors.POCSAGConnector(connection)) // activate POCSAG
+
+if (!!config.connectors.pocsag && config.connectors.pocsag.enabled === true) {
+    types.ConnectorRegistry.register(new types.Connectors.POCSAGConnector(connection))
+}
+if (!!config.connectors.lorawan && config.connectors.lorawan.enabled === true) {
+    types.ConnectorRegistry.register(new types.Connectors.LoRaWANConnector(connection))
+}
+if (!!config.connectors.dapnet && config.connectors.dapnet.enabled === true) {
+    types.ConnectorRegistry.register(new types.Connectors.DAPNETConnector())
+}
 
 types.DeviceRegistry.register(new types.devices.GenericPager())
 types.DeviceRegistry.register(new types.devices.BirdySlim())

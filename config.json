@@ -1,0 +1,19 @@
+{
+    "general": {
+        "amqp": [
+            "amqp://daemon:daemon@10.13.37.37:5672/"
+        ],
+        "port": 3000
+    },
+    "connectors": {
+        "pocsag": {
+            "enabled": true
+        },
+        "lorawan": {
+            "enabled": false
+        },
+        "dapnet": {
+            "enabled": false
+        }
+    }
+}
