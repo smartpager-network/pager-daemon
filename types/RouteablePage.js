@@ -1,6 +1,0 @@
-class RouteablePage {
-    id
-
-    constructor() {
-    }
-}

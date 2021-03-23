@@ -37,5 +37,8 @@ app.post('/api/message/advanced', async (req, res) => {
     await types.MessageManager.Deliver(id)
     return res.json(id)
 })
+app.get('/api/message/status/:id', async (req, res) => { //TODO: make this fancy
+    return res.json(types.MessageManager.messages[ req.params.id ])
+})
 
 app.listen(3000)
