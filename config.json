@@ -6,14 +6,29 @@
         "port": 3000
     },
     "connectors": {
+        "dummy": {
+            "enabled": true,
+            "duplexTimeout": 30
+        },
         "pocsag": {
-            "enabled": true
+            "enabled": true,
+            "duplexTimeout": 30
         },
         "lorawan": {
             "enabled": false
         },
         "dapnet": {
             "enabled": false
+        }
+    },
+    "pagers": {
+        "birdyslim": {
+            "enabled": true,
+            "formatRecvAck": "|5||S||V||G||D||C|>A",
+            "formatReadAck": "|5||S||V||G||D||C|>B",
+            "formatOperAck": "|5||S||V||G||D||C|$OP",
+            "formatStatus":  "|S||V||G||D||C|",
+            "formatSOS":  "|S||V||G||D||C|"
         }
     }
 }

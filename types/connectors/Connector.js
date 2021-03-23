@@ -4,7 +4,11 @@ class Connector {
     this.name = "_base"
     this.duplexCapable = false
   }
-  async transmitMessage(msg, params) {
+  Hook (connectorRegistry) {
+    this.connectorRegistry = connectorRegistry
+    this.connectorRegistry.events.emit('ping', this.name)
+  }
+  async transmitMessage(uuid, msg, params) {
     throw "not implemented"
   }
 }

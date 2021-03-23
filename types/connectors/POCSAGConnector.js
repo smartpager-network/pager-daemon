@@ -1,4 +1,6 @@
+const { uuid } = require("@supercharge/strings/dist")
 const Connector = require("./Connector")
+const md5 = require('md5')
 
 class POCSAGConnector extends Connector {
     constructor (amqpConnMngr) {
@@ -13,6 +15,7 @@ class POCSAGConnector extends Connector {
         })
     }
     async transmitMessage(msg, params) {
+        const UUID = this.name+':'+md5(JSON.stringify([this.name,...params]))
         if (params.length < 1) return false
         const RIC = params[0]
         const lastChar = RIC[RIC.length - 1].charCodeAt(0) - 65
@@ -33,9 +36,11 @@ class POCSAGConnector extends Connector {
         this.channelWrapper.sendToQueue('tx_pocsag', Buffer.from(msg.payload), {
             headers
         })
-        .then(function() {
+        .then(() => {
+            this.connectorRegistry.reportState(msg, UUID, 'routed')
             return true
-        }).catch(function(err) {
+        }).catch((err) => {
+            this.connectorRegistry.reportFail(msg, UUID)
             return false
         })
     }

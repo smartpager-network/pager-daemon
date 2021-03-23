@@ -17,9 +17,6 @@ class Skyper extends PagerDevice {
   async formatTX(msg) {
     msg.id = this.RandID()
     await MessageManager.BindMsg(msg)
-    msg._routerData = {
-      duplexCapable: false,
-    }
     if (msg.routingParams.skyperNetwork === true) {
       let newPayload = msg.payload.substring(0, 3)
       for(let chr of msg.payload.substring(3).split('')) {
