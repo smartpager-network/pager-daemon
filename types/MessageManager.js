@@ -11,6 +11,7 @@ class MessageManager {
         if (!routingParams.device) {
             routingParams.device = 'generic'
         }
+        //console.log(routingParams)
         const msgObj = {
             type,
             routingParams,
@@ -30,7 +31,11 @@ class MessageManager {
             duplexCapable: false,
             deliveryLog: {},
         })
-        console.log('finished msg obj is ', msgObj)
+        console.log(`Type:\t\t${ type }\nDevice:\t\t${ routingParams.device }`)
+        console.log(`Message UUID:\t${ msgObj.id }`)
+        console.log(`Connectors:\t${ JSON.parse(JSON.stringify(routingParams.connectors)).map(x=>`${x[0]}=${x.splice(1).join(',')}`).join('&') }`)
+        console.log(`Message Original Payload:\t"${ payload }"`)
+        console.log(`Processed Device Payload:\t"${ msgObj.payload }"`)
         return msgObj.id
     }
     async msgStatus(msgId, uuid, status) {
@@ -53,7 +58,7 @@ class MessageManager {
         if (!msg._routerData) throw `No Routerdata attached to msg with id ${ msgId }`
         if (!!msg.locked) throw 'message is locked'
 
-        console.log(msg.routingParams.connectors)
+        //console.log(msg.routingParams.connectors)
         let deliveryChain = msg.routingParams.connectors.map((connectorDeliveryTry) => {
             const   connectorName = connectorDeliveryTry[0],
                     connectorArgs = connectorDeliveryTry.slice(1),
@@ -66,15 +71,15 @@ class MessageManager {
                     res([false, 'timeout'])
                 }, !!connectorConfig && !!connectorConfig.duplexTimeout ? connectorConfig.duplexTimeout*1e3 : 30e3)
                 ConnectorRegistry.events.once(`msg:status:${ msgId }:failed`, () => {
-                    console.log(`${ msgId } failed, continuing`)
+                    console.log(`${ msgId } failed via ${ connectorName }:${ connectorArgs.join(',') }, continuing...`)
                     res([false, 'failed'])
                 })
                 ConnectorRegistry.events.once(`msg:status:${ msgId }:delivered`, () => {
-                    console.log(`${ msgId } delivered`)
+                    console.log(`${ msgId } delivered via ${ connectorName }:${ connectorArgs.join(',') }`)
                     res([true, 'delivered'])
                 })
-                console.log(`Trying to deliver msg#${ msg.id } with ${ JSON.stringify(connectorDeliveryTry) }`)
-                console.log(this.messages[ msgId ].deliveryLog)
+                console.log(`Trying to deliver msg#${ msg.id } with ${ connectorName }:${ connectorArgs.join(',') }`)
+                //console.log(this.messages[ msgId ].deliveryLog)
                 ConnectorRegistry.transmit(connectorName, msg, connectorArgs)
             }
             return chainPromise
@@ -89,7 +94,8 @@ class MessageManager {
         })
         .then(($) => {
             this._clearEventHandlers4MsgID(msgId)
-            console.log('DELIVERY WAS A SUCCESS', $, this.messages[ msgId ]._routerData.deliveryLog)
+            const dLog = this.messages[ msgId ]._routerData.deliveryLog
+            console.log('DELIVERY WAS A SUCCESS', Object.keys(dLog).map(x=>`${ x } is ${ dLog[x] }`).join('\n'))
         })
         .catch(($) => {
             this._clearEventHandlers4MsgID(msgId)
