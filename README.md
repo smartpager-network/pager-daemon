@@ -23,7 +23,7 @@ API Calls:
 
 | GET `/api/message/status/<id>` - fetches the current Message Data(DeliveryLog, Payload, etc.)
 
-| POST `/api/message/advanced` - Creates a new Message and starts delivering it. HTTP Body is a JSON Object. for example:
+| POST `/api/message/advanced` - Creates a new Message and starts delivering it, returns the Message ID. HTTP Body is a JSON Object. for example:
 ```json
 {
     "type": "duplex",
@@ -36,4 +36,5 @@ API Calls:
         ]
     },
     "payload": "Testbericht"
-}```
+}
+```
