@@ -12,3 +12,28 @@ Features in W.I.P:
 
 Planned:
 - WebSocket Live Routing Status
+
+
+
+API Server running on Port `3000`
+
+API Calls:
+
+| GET `/api/message/ack/recv/<id>` - marks a Message as Delivered
+
+| GET `/api/message/status/<id>` - fetches the current Message Data(DeliveryLog, Payload, etc.)
+
+| POST `/api/message/advanced` - Creates a new Message and starts delivering it. HTTP Body is a JSON Object. for example:
+```json
+{
+    "type": "duplex",
+    "routing": {
+        "device": "birdyslim",
+        "connectors": [
+            [ "dummy", "fail" ],
+            [ "pocsag", "133701D" ],
+            [ "dummy", "works" ]
+        ]
+    },
+    "payload": "Testbericht"
+}```
