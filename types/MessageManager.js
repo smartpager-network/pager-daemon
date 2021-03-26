@@ -23,9 +23,9 @@ class MessageManager {
         const hwDuplexSupport = require("./DeviceRegistry").Devices[ routingParams.device ].duplex || false
         Object.assign(this.messages[ msgObj.id ]._routerData, hwDuplexSupport ? {
             duplexCapable: true,
-            recvAck: false,
-            readAck: false,
-            response: false,
+            recvAck: false, // aka "delivered"
+            readAck: false, // "read"
+            response: false, // "resp"
             deliveryLog: {},
         } : {
             duplexCapable: false,
@@ -40,6 +40,7 @@ class MessageManager {
     }
     async msgStatus(msgId, uuid, status) {
         this.messages[ msgId ]._routerData.deliveryLog[ uuid ] = status
+        if (status === 'delivered') this.messages[ msgId ]._routerData.recvAck = true
         //this.Deliver(msgId)
         console.log(msgId, uuid, 'status is', status)
     }
@@ -65,7 +66,6 @@ class MessageManager {
                     connectorConfig = config.connectors[connectorName]
             //const UUID = md5(JSON.stringify(connectorDeliveryTry))
             const chainPromise = (res) => {
-                ConnectorRegistry.events.removeAllListeners(`msg:status:${ msgId }:delivered`)
                 ConnectorRegistry.events.removeAllListeners(`msg:status:${ msgId }:failed`)
                 setTimeout(() => {
                     res([false, 'timeout'])
@@ -74,24 +74,28 @@ class MessageManager {
                     console.log(`${ msgId } failed via ${ connectorName }:${ connectorArgs.join(',') }, continuing...`)
                     res([false, 'failed'])
                 })
-                ConnectorRegistry.events.once(`msg:status:${ msgId }:delivered`, () => {
-                    console.log(`${ msgId } delivered via ${ connectorName }:${ connectorArgs.join(',') }`)
-                    res([true, 'delivered'])
-                })
                 console.log(`Trying to deliver msg#${ msg.id } with ${ connectorName }:${ connectorArgs.join(',') }`)
-                //console.log(this.messages[ msgId ].deliveryLog)
                 ConnectorRegistry.transmit(connectorName, msg, connectorArgs)
             }
             return chainPromise
         })
-        new Promise(async (res, rej) => {
-            for(let deliveryFunction of deliveryChain) {
-                let result = await new Promise(deliveryFunction)
-                if (result[0] === true) { res(result); break; }
-                // TODO: handle case, when a different verification channel is used for ACK
-            }
-            rej()
-        })
+        Promise.race([
+            new Promise(res => { // Delivery Event for this message
+                ConnectorRegistry.events.once(`msg:status:${ msgId }:delivered`, (_, uuid) => {
+                    console.log(`${ msgId } delivered via ${ uuid }`)
+                    return res()
+                })
+            }),
+            new Promise(async (res, rej) => {
+                for(let deliveryFunction of deliveryChain) {
+                    //when a different verification channel is used for ACK
+                    if (this.messages[ msgId ]._routerData.recvAck === true) break;
+                    let result = await new Promise(deliveryFunction)
+                    if (result[0] === true) { res(); break; }
+                }
+                rej()
+            })
+        ])
         .then(($) => {
             this._clearEventHandlers4MsgID(msgId)
             const dLog = this.messages[ msgId ]._routerData.deliveryLog

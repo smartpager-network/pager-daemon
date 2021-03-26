@@ -29,7 +29,7 @@ class ConnectorRegistry {
         this.reportState(msg, uuid, 'failed')
     }
     reportDelivered(msg, uuid) {
-        this.events.emit(`msg:status:${ msg.id }:delivered`)
+        this.events.emit(`msg:status:${ msg.id }:delivered`, msg, uuid)
         this.reportState(msg, uuid, 'delivered')
     }
 

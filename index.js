@@ -37,8 +37,14 @@ app.post('/api/message/advanced', async (req, res) => {
     await types.MessageManager.Deliver(id)
     return res.json(id)
 })
+
 app.get('/api/message/status/:id', async (req, res) => { //TODO: make this fancy
     return res.json(types.MessageManager.messages[ req.params.id ])
+})
+
+app.get('/api/message/ack/recv/:id', async (req, res) => { //TODO: make this fancy
+    types.ConnectorRegistry.reportDelivered({ id: req.params.id }, 'http')
+    return res.json(true)
 })
 
 app.listen(3000)
