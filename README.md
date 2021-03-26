@@ -1,4 +1,4 @@
-# pocsag-daemon
+# dispatcher-daemon
 
 [Workflow](https://smartpager.network/Basisfunctionaliteit%20SmartpagerNetwork.pdf)
 
@@ -11,6 +11,7 @@ Features in W.I.P:
 - Still missing a RX path and processing (Message gets passed along every Device Class, which then tries to parse it, if successfull it breaks the processing loop and the Device Class handles decoding+status handling for delivery)
 
 Planned:
+- DAPNET integration
 - WebSocket Live Routing Status
 
 
