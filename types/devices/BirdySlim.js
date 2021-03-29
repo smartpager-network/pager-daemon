@@ -9,21 +9,6 @@ class BirdySlim extends PagerDevice {
         super()
         this.duplex = true
         this.name = "birdyslim"
-        /*this.birdyParamMapper = {
-            //'A': ['beaconIDinstant'], // It is the ID of current localisation beacon.
-            //'B': ['beaconIDstored'], // It is the ID of the last localisation beacon seen by the BIRDY
-            'C': ['rssi', 2], // It is the POCSAG carrier received level (in dBm) transmitted by the POCSAG emitter and received by the pager.
-            //'D': ['date'], // Timestamp in seconds from 01/01/2014.
-            //'E': ['beaconRoundIDstored'], // It is the ID of the last round beacon seen by the pager
-            'G': ['gps', (1+3+1+5)+(1+2+1+5)+2], // Longitude and latitude in decimal degrees and last acquisition time in minutes.
-            'I': ['identityRIC'], // BIRDY first RIC code
-            'N': ['messageNumber', 5], // To display message number message must begin with ***Mxxx*** where xxx is the message number.
-            'S': ['serial', 13], // BIRDY serial number
-            //'T': ['receivedRIC'], // Message receipt RIC code
-            'V': ['batteryVoltage', 2], // BIRDY battery voltage in HEX
-            //'X': ['lowBattBeacon'], // It is the ID of a beacon with a low battery voltage
-            '5': ['msgId', 5], // It is to recall first 5 characters of received message in an acknowledgement.
-          }*/
     } 
     RandID() {
         return `B${ Str.random(4) }`
@@ -34,20 +19,55 @@ class BirdySlim extends PagerDevice {
         msg.payload = msg.type === 'duplex' ? `${ msg.id }${ msg.payload }` : msg.payload // only if duplex wanted we add the id
     }
     async tryReceive(data, connector) {
-        console.log(data)
         if (typeof(data) === 'object' && !!data.type) {
+            const stateSet = {
+                lastSeen: data.date
+            }
+            // If we have a Battery Measurement, we should store it
+            if (!!data.battery) stateSet.battery = data.battery/1e1
+            // the same if we have an rssi measurement
+            if (!!data.rssi) stateSet.rssi = data.rssi
+            // and if we have the 3 components of a GPS Block
+            if (!!data.latitude && !!data.longitude && !!data.lastGPSAcquisition) stateSet.gps = {
+                gps: {
+                    lastGPSAcquisition: data.lastGPSAcquisition,
+                    latitude: data.latitude,
+                    longitude: data.longitude,
+                },
+            }
+
             switch (data.type) {
-                case 'ack':
-                    if (data.ack === 'recv') {
-                        require('../ConnectorRegistry').reportDelivered({ id: data.msgid }, `lorawan:${ data.device_id }`) // cheating lol
-                        require('../MessageManager').attachMetadata(data.msgid, data)
+                case 'ack': {
+                        switch (data.ack) {
+                            case 'recv': 
+                                require('../ConnectorRegistry').reportDelivered({ id: data.msgid }, `lorawan:${ data.device_id }`)
+                            break;
+                            case 'read':
+                                require('../MessageManager').markMessageRead(data.msgid)
+                            break;
+                            case 'operational':
+                                require('../MessageManager').respondToMessage(data.msgid, data.operationalData)
+                                break;
+                        }
+                        // If we have had a Ack. Event, we should store some Metadate about it too
+                        require('../MessageManager').attachMetadata(data.msgid, {
+                            ack: data.ack,
+                            rssi: data.rssi,
+                            date: data.date
+                        })
                     }
                     break;
+                    case 'sos':
+                        stateSet.sos = {
+                            sos: data.sos,
+                            date: data.date,
+                        }
+                    break;
             }
+            require('../DeviceRegistry').stateSet(this.name, data.device_id, stateSet) 
             return true
         }
         return false
-        // config.pagers.birdyslim.formatRecvAck
     }
 }
 module.exports = BirdySlim

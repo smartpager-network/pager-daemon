@@ -6,7 +6,7 @@ class POCSAGConnector extends Connector {
     constructor (amqpConnMngr) {
         super(amqpConnMngr)
         this.name = "pocsag"
-        this.duplexCapable = true
+        this.duplexCapable = false
         this.channelWrapper = this.amqpConnMngr.createChannel({
             json: false,
             setup: function(channel) {

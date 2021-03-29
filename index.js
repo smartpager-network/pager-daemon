@@ -47,4 +47,12 @@ app.get('/api/message/ack/recv/:id', async (req, res) => { //TODO: make this fan
     return res.json(true)
 })
 
+app.get('/api/device/:id', async (req, res) => {
+    return res.json(
+        req.params.id.length == 1
+            ? Object.keys(types.DeviceRegistry.DeviceStates)
+            : types.DeviceRegistry.DeviceStates[ req.params.id ]
+    )
+})
+
 app.listen(3000)

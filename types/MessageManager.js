@@ -32,7 +32,7 @@ class MessageManager {
             deliveryLog: {},
         })
         console.log(`Type:\t\t${ type }\nDevice:\t\t${ routingParams.device }`)
-        console.log(`Message UUID:\t${ msgObj.id }`)
+        console.log(`Message UUID:\t${ msgObj.id } HEX: ${ Buffer.from(msgObj.id, 'utf-8').toString('hex') }`)
         console.log(`Connectors:\t${ JSON.parse(JSON.stringify(routingParams.connectors)).map(x=>`${x[0]}=${x.splice(1).join(',')}`).join('&') }`)
         console.log(`Message Original Payload:\t"${ payload }"`)
         console.log(`Processed Device Payload:\t"${ msgObj.payload }"`)
@@ -55,6 +55,12 @@ class MessageManager {
             this.messages[ msgId ]._routerData.metadata = []
         }
         this.messages[ msgId ]._routerData.metadata.push(metadata)
+    }
+    markMessageRead(msgId) {
+        this.messages[ msgId ]._routerData.readAck = true
+    }
+    respondToMessage(msgId, response) {
+        this.messages[ msgId ]._routerData.response = response
     }
     _clearEventHandlers4MsgID(msgId) {
         ConnectorRegistry.events.removeAllListeners(`msg:status:${ msgId }:delivered`)
@@ -109,7 +115,7 @@ class MessageManager {
         })
         .catch(($) => {
             this._clearEventHandlers4MsgID(msgId)
-            console.log('DELIVERY WAS A TOTAL FAILURE , FUCK THIS PLANET', $)
+            console.log('DELIVERY WAS A TOTAL FAILURE', $)
         })
         return true
     }
@@ -152,7 +158,7 @@ class MessageManager {
         })
         .catch(($) => {
             this._clearEventHandlers4MsgID(msgId)
-            console.log('ROUTING WAS A TOTAL FAILURE , FUCK THIS PLANET', $)
+            console.log('ROUTING WAS A TOTAL FAILURE', $)
         })
     }
     async BindMsg(msg) {

@@ -13,7 +13,7 @@ class DummyConnector extends Connector {
     await new Promise((res)=>setTimeout(res,3e3))
     // set Routed
     this.connectorRegistry.reportState(msg, UUID, 'routed')
-    await new Promise((res)=>setTimeout(res,6e3))
+    await new Promise((res)=>setTimeout(res,16e3))
     this.connectorRegistry.events.emit('response', { //reconstruct the response coming from a lorawan connector
       type: 'ack',
       ack: 'recv',
