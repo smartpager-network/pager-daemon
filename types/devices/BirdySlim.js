@@ -35,6 +35,11 @@ class BirdySlim extends PagerDevice {
                     longitude: data.longitude,
                 },
             }
+            stateSet.lastLoRaPacket = data.metadata
+            /*if (!!data.metadata && !!data.metadata.uplink_message.rx_metadata) {
+                const rx_metadata = data.metadata.uplink_message.rx_metadata
+                
+            }*/
 
             switch (data.type) {
                 case 'ack': {
@@ -49,11 +54,12 @@ class BirdySlim extends PagerDevice {
                                 require('../MessageManager').respondToMessage(data.msgid, data.operationalData)
                                 break;
                         }
-                        // If we have had a Ack. Event, we should store some Metadate about it too
+                        // If we have had a Ack. Event, we should store some Metadata about it too
                         require('../MessageManager').attachMetadata(data.msgid, {
                             ack: data.ack,
                             rssi: data.rssi,
-                            date: data.date
+                            date: data.date,
+                            metadata: data.metadata,
                         })
                     }
                     break;
