@@ -1,11 +1,13 @@
 const events = require('events')
 const md5 = require('md5')
+const DeviceRegistry = require("./DeviceRegistry")
 
 class ConnectorRegistry {
     constructor() {
         this.Connectors = {}
         this.events = new events.EventEmitter()
         this.events.on('ping', (x) => console.log('connector event "ping" from', x))
+        this.events.on('response', this.receive.bind(this))
     }
     register(connector) {
         this.Connectors[ connector.name ] = connector
@@ -35,7 +37,10 @@ class ConnectorRegistry {
 
 
     //W.I.P
-    receive(id, data) {
+    async receive(data, connector) {
+        for (let device of DeviceRegistry.getDevices()) {
+            if (await device.tryReceive(data, connector) === true) { break; }
+        }
     }
 }
 const registry = new ConnectorRegistry()

@@ -15,7 +15,10 @@
             "duplexTimeout": 30
         },
         "lorawan": {
-            "enabled": false
+            "enabled": true,
+            "mqttserver": "mqtt://eu1.cloud.thethings.network:1883",
+            "username": "<Username>",
+            "password": "<Password>"
         },
         "dapnet": {
             "enabled": false
@@ -24,11 +27,9 @@
     "pagers": {
         "birdyslim": {
             "enabled": true,
-            "formatRecvAck": "|5||S||V||G||D||C|>A",
-            "formatReadAck": "|5||S||V||G||D||C|>B",
-            "formatOperAck": "|5||S||V||G||D||C|$OP",
-            "formatStatus":  "|S||V||G||D||C|",
-            "formatSOS":  "|S||V||G||D||C|"
+            "rxchain": {
+                "lorawan": true
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ class PagerDevice {
     this.name = "_base"
   }
   async formatTX(msg) { }
+  async tryReceive(data, connector) { }
   RandID() { }
 }
 module.exports = PagerDevice

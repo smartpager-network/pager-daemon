@@ -15,7 +15,7 @@ if (!!config.connectors.lorawan && config.connectors.lorawan.enabled === true) {
     types.ConnectorRegistry.register(new types.Connectors.LoRaWANConnector(connection))
 }
 if (!!config.connectors.dapnet && config.connectors.dapnet.enabled === true) {
-    types.ConnectorRegistry.register(new types.Connectors.DAPNETConnector())
+    types.ConnectorRegistry.register(new types.Connectors.DAPNETConnector(connection))
 }
 types.ConnectorRegistry.register(new types.Connectors.DummyConnector())
 

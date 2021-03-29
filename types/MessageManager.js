@@ -50,6 +50,12 @@ class MessageManager {
         else
             this.DeliverOneWay(msgId)
     }
+    attachMetadata(msgId, metadata) {
+        if (!this.messages[ msgId ]._routerData.metadata) {
+            this.messages[ msgId ]._routerData.metadata = []
+        }
+        this.messages[ msgId ]._routerData.metadata.push(metadata)
+    }
     _clearEventHandlers4MsgID(msgId) {
         ConnectorRegistry.events.removeAllListeners(`msg:status:${ msgId }:delivered`)
         ConnectorRegistry.events.removeAllListeners(`msg:status:${ msgId }:failed`)
