@@ -54,5 +54,12 @@ app.get('/api/device/:id', async (req, res) => {
             : types.DeviceRegistry.DeviceStates[ req.params.id ]
     )
 })
-
+const memstats = () => {
+    const used = process.memoryUsage()
+    for (let key in used) {
+        console.log(`${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB`)
+    }
+}
+memstats()
+setInterval(memstats, 10e3)
 app.listen(3000)

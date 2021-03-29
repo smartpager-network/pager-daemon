@@ -8,11 +8,11 @@
     "connectors": {
         "dummy": {
             "enabled": true,
-            "duplexTimeout": 30
+            "duplexTimeout": 300
         },
         "pocsag": {
             "enabled": true,
-            "duplexTimeout": 30
+            "duplexTimeout": 300
         },
         "lorawan": {
             "enabled": true,
