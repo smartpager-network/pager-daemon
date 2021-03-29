@@ -6,9 +6,9 @@ Features Working rn:
 - Duplex and Simplex Processing
 
 Features in W.I.P:
-- LoRaWAN progress 0%
+- LoRaWAN progress 70%
 - POCSAG only TX , no RX path
-- Still missing a RX path and processing (Message gets passed along every Device Class, which then tries to parse it, if successfull it breaks the processing loop and the Device Class handles decoding+status handling for delivery)
+- ~~Still missing a RX path and processing (Message gets passed along every Device Class, which then tries to parse it, if successfull it breaks the processing loop and the Device Class handles decoding+status handling for delivery)~~
 
 Planned:
 - DAPNET integration
