@@ -17,18 +17,25 @@
         "lorawan": {
             "enabled": true,
             "mqttserver": "mqtt://eu1.cloud.thethings.network:1883",
-            "username": "<Username>",
-            "password": "<Password>"
+            "username": "TTN_v3_MQTT_Username",
+            "password": "TTN_v3_MQTT_Password"
         },
         "dapnet": {
-            "enabled": false
+            "enabled": false,
+            "endpoint": "dapnet.afu.rwth-aachen.de",
+            "username": "DAPNET_Username",
+            "password": "DAPNET_Passwort"
         }
     },
     "pagers": {
         "birdyslim": {
             "enabled": true,
             "rxchain": {
-                "lorawan": true
+                "lorawan": true,
+                "events": {
+                    "webhook": false,
+                    "mqtt": false
+                }
             }
         }
     }
