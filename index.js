@@ -24,10 +24,9 @@ types.DeviceRegistry.register(new types.devices.BirdySlim())
 types.DeviceRegistry.register(new types.devices.Skyper())
 
 const express = require('express')
-const bodyParser = require('body-parser')
 const app = express()
-app.use(bodyParser.json())
-/*app.get('/api/message/easy', async (req, res) => {})*/
+app.use(express.json())
+
 app.post('/api/message/advanced', async (req, res) => {
     if (!req.body.type) return res.status(500).json("ERROR: no msg type(simple,duplex)")
     if (!req.body.payload) return res.status(500).json("ERROR: no msg payload")
