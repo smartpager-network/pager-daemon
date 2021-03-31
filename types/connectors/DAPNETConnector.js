@@ -1,6 +1,7 @@
 const Connector = require("./Connector")
 const config = require('../../config.json')
-const axios = require('axois')
+const axios = require('axios')
+const e = require("express")
 
 class DAPNETConnector extends Connector {
   constructor (amqpConnMngr) {
@@ -25,6 +26,7 @@ class DAPNETConnector extends Connector {
           password: config.connectors.dapnet.password
         }
       }
+      console.log(config.connectors.dapnet.endpoint, dapnetRequest, extraParameters)
       return axios.post(config.connectors.dapnet.endpoint, dapnetRequest, extraParameters)
       .then(() => {
           this.connectorRegistry.reportState(msg, UUID, 'routed')
