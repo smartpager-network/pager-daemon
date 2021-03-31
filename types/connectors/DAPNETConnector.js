@@ -29,11 +29,13 @@ class DAPNETConnector extends Connector {
       console.log(config.connectors.dapnet.endpoint, dapnetRequest, extraParameters)
       return axios.post(config.connectors.dapnet.endpoint, dapnetRequest, extraParameters)
       .then(() => {
-          this.connectorRegistry.reportState(msg, UUID, 'routed')
-          return true
-      }).catch((err) => {
-          this.connectorRegistry.reportFail(msg, UUID)
-          return false
+        this.connectorRegistry.reportState(msg, UUID, 'routed')
+        return true
+      })
+      .catch((err) => {
+        console.error(err.response.data)
+        this.connectorRegistry.reportFail(msg, UUID)
+        return false
       })
   }
 }
