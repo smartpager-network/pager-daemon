@@ -26,7 +26,7 @@ class DAPNETConnector extends Connector {
           password: config.connectors.dapnet.password
         }
       }
-      console.log(config.connectors.dapnet.endpoint, dapnetRequest, extraParameters)
+      // console.log(config.connectors.dapnet.endpoint, dapnetRequest, extraParameters)
       return axios.post(config.connectors.dapnet.endpoint, dapnetRequest, extraParameters)
       .then(() => {
         this.connectorRegistry.reportState(msg, UUID, 'routed')
