@@ -1,7 +1,7 @@
 const Connector = require("./Connector")
 const config = require('../../config.json')
+const md5 = require('md5')
 const axios = require('axios')
-const e = require("express")
 
 class DAPNETConnector extends Connector {
   constructor (amqpConnMngr) {
