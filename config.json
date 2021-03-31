@@ -21,7 +21,7 @@
             "password": "TTN_v3_MQTT_Password"
         },
         "dapnet": {
-            "enabled": false,
+            "enabled": true,
             "endpoint": "dapnet.afu.rwth-aachen.de",
             "username": "DAPNET_Username",
             "password": "DAPNET_Passwort"
