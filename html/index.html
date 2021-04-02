@@ -67,7 +67,15 @@
                 <label for="pocsag_duplex_timeout">Duplex Timeout(in seconds): [recommended 90s]</label>
                 <input type="number" min="10" max="1200" id="pocsag_duplex_timeout"/>
             </fieldset>
-
+            <fieldset>
+                <legend>eCityruf Connector</legend>
+                <label for="ecityruf_enabled">Enabled:</label>
+                <input type="checkbox" id="ecityruf_enabled"/>
+                </br>
+                <label for="ecityruf_duplex_timeout">Duplex Timeout(in seconds): [recommended 180s]</label>
+                <input type="number" min="10" max="1200" id="ecityruf_duplex_timeout"/>
+            </fieldset>
+            
             <hr>
             <!--
                 <button>Check Settings</button>
@@ -102,6 +110,9 @@
 
             $('#pocsag_enabled').attr('checked', config.connectors.pocsag.enabled)
             $('#pocsag_duplex_timeout').val(config.connectors.pocsag.duplexTimeout)
+
+            $('#ecityruf_enabled').attr('checked', config.connectors.ecityruf.enabled)
+            $('#ecityruf_duplex_timeout').val(config.connectors.ecityruf.duplexTimeout)
         }
         async function saveConfigFromForm() {
             let newConfig = await $.getJSON('/config') // make a copy from the current dispatcher config
@@ -120,7 +131,10 @@
             // connectors.pocsag
             newConfig.connectors.pocsag.enabled = $('#pocsag_enabled').prop('checked')
             newConfig.connectors.pocsag.duplexTimeout = parseInt($('#pocsag_duplex_timeout').val())
-
+            // connectors.ecityruf
+            newConfig.connectors.ecityruf.enabled = $('#ecityruf_enabled').prop('checked')
+            newConfig.connectors.ecityruf.duplexTimeout = parseInt($('#ecityruf_duplex_timeout').val())
+            
             console.log(newConfig)
             await $.ajax({
                 type: 'POST',

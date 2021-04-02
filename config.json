@@ -16,6 +16,10 @@
             "enabled": true,
             "duplexTimeout": 300
         },
+		"ecityruf": {
+			"enabled": false,
+			"duplexTimeout": 180
+		},
         "lorawan": {
             "enabled": true,
             "mqttserver": "mqtt://eu.thethings.network:1883",

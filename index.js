@@ -18,6 +18,9 @@ if (!!config.connectors.lorawan && config.connectors.lorawan.enabled === true) {
 if (!!config.connectors.dapnet && config.connectors.dapnet.enabled === true) {
     types.ConnectorRegistry.register(new types.Connectors.DAPNETConnector(connection))
 }
+if (!!config.connectors.ecityruf && config.connectors.ecityruf.enabled === true) {
+    types.ConnectorRegistry.register(new types.Connectors.eCityrufConnector(connection))
+}
 types.ConnectorRegistry.register(new types.Connectors.DummyConnector())
 
 types.DeviceRegistry.register(new types.devices.GenericPager())
