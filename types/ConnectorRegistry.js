@@ -14,7 +14,10 @@ class ConnectorRegistry {
         connector.Hook(this)
     }
     transmit(name, msg, params) {
-        if (!this.Connectors[ name ]) throw "not registred"
+        if (!this.Connectors[ name ]) {
+            setTimeout(this.reportFail.bind(this), 1e3, msg, name)
+            return false
+        }
         //md5(JSON.stringify([name, ...params])), 
         this.Connectors[ name ].transmitMessage(msg, params)
     }
