@@ -3,7 +3,8 @@
         "amqp": [
             "amqp://daemon:daemon@10.13.37.37:5672/"
         ],
-        "port": 3000
+        "port": 3000,
+        "configPort": 3001
     },
     "connectors": {
         "dummy": {
@@ -16,15 +17,16 @@
         },
         "lorawan": {
             "enabled": true,
-            "mqttserver": "mqtt://eu1.cloud.thethings.network:1883",
-            "username": "TTN_v3_MQTT_Username",
-            "password": "TTN_v3_MQTT_Password"
+            "mqttserver": "mqtt://eu.thethings.network:1883",
+            "username": "TTN_v2_APP_ID___OR___v3_MQTT_Username",
+            "password": "TTN_v2_APP_APIKEY__OR__TTN_v3_MQTT_Password"
         },
         "dapnet": {
             "enabled": true,
             "endpoint": "http://hampager.de:8080/calls",
             "username": "DAPNET_Username",
-            "password": "DAPNET_Passwort"
+            "password": "DAPNET_Passwort",
+            "duplexTimeout": 300
         }
     },
     "pagers": {
