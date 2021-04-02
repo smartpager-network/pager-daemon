@@ -4,7 +4,8 @@
             "amqp://daemon:daemon@10.13.37.37:5672/"
         ],
         "port": 3000,
-        "configPort": 3001
+        "configPort": 3001,
+        "configWebInterfaceEnabled": true
     },
     "connectors": {
         "dummy": {

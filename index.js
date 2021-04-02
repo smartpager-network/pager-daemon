@@ -1,4 +1,5 @@
 const amqp = require('amqp-connection-manager')
+const fs = require('fs')
 const config = require('./config.json')
 
 // Create a connetion manager
@@ -24,8 +25,10 @@ types.DeviceRegistry.register(new types.devices.BirdySlim())
 types.DeviceRegistry.register(new types.devices.Skyper())
 
 const express = require('express')
-const app = express()
+const app = express(), appConfig = express()
 app.use(express.json())
+appConfig.use(express.json())
+appConfig.use(express.static('html'))
 
 app.post('/api/message/advanced', async (req, res) => {
     if (!req.body.type) return res.status(500).json("ERROR: no msg type(simple,duplex)")
@@ -53,12 +56,35 @@ app.get('/api/device/:id', async (req, res) => {
             : types.DeviceRegistry.DeviceStates[ req.params.id ]
     )
 })
-const memstats = () => {
+
+/** CONFIG Routes */
+
+appConfig.get('/config', async (req, res) => {
+    return res.json(JSON.parse(fs.readFileSync('config.json')))
+})
+appConfig.post('/config', async (req, res) => {
+    if (!(!!req.body.general)) return res.status(403).json(false)
+    if (!(!!req.body.connectors)) return res.status(403).json(false)
+    if (!(!!req.body.pagers)) return res.status(403).json(false)
+    console.log(req.body)
+    fs.writeFileSync('config.json', JSON.stringify(req.body, null, "\t"))
+    return res.json(true)
+})
+appConfig.post('/restart', (req, res) => {
+    process.exit(1)
+})
+
+/*const memstats = () => {
     const used = process.memoryUsage()
     for (let key in used) {
         console.log(`${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB`)
     }
 }
 memstats()
-setInterval(memstats, 10e3)
-app.listen(3000)
+setInterval(memstats, 10e3)*/
+
+
+app.listen(config.general.port)
+if (config.general.configWebInterfaceEnabled === true) {
+    appConfig.listen(config.general.configPort)
+}

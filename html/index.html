@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dispatcher Configuration</title>
+        <script src="jquery.min.js"></script>
+        <style>
+            input[type=text], input[type=number], input[type=password], select {
+                width: 20rem;
+                padding: 0.8rem 1rem;
+                margin: 0.4rem 0;
+                display: inline-block;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+        </style>
+    </head>
+    <body>
+        <h3>Dispatcher Configuration</h3>
+        <hr>
+
+        <fieldset>
+            <legend>General</legend>
+            <label>AMQP URL:</label>
+            <input type="text" id="amqpURL"/>
+        </fieldset>
+        <fieldset>
+            <legend>Connectors</legend>
+            <fieldset>
+                <legend>DAPNET Connector</legend>
+                <label for="dapnet_enabled">Enabled:</label>
+                <input type="checkbox" id="dapnet_enabled"/>
+                </br>
+                <label for="dapnet_endpoint">Endpoint:</label>
+                <input type="text" id="dapnet_endpoint"/>
+                </br>
+                <label for="dapnet_duplex_timeout">Duplex Timeout(in seconds) : recommended 90s</label>
+                <input type="number" min="10" max="1200" id="dapnet_duplex_timeout"/>
+                </br>
+                <label for="dapnet_username">Username:</label>
+                <input type="text" id="dapnet_username"/>
+                </br>
+                <label for="dapnet_password">Password:</label>
+                <input type="password" id="dapnet_password"/>
+            </fieldset>
+            <fieldset>
+                <legend>LoRaWAN Connector</legend>
+                <label for="lorawan_enabled">Enabled:</label>
+                <input type="checkbox" id="lorawan_enabled"/>
+                </br>
+                <label for="lorawan_mqttserver">MQTT Endpoint:</label>
+                <input type="text" id="lorawan_mqttserver"/>
+                <button onClick="setLoRaWANMQTT('mqtt://eu.thethings.network:1883')">Preset TTNv2</button>
+                <button onClick="setLoRaWANMQTT('mqtt://eu1.cloud.thethings.network:1883')">Preset TTNv3</button>
+                </br>
+                <label for="lorawan_username">Username:</label>
+                <input type="text" id="lorawan_username"/>
+                </br>
+                <label for="lorawan_password">Password:</label>
+                <input type="password" id="lorawan_password"/>
+            </fieldset>
+            <fieldset>
+                <legend>POCSAG Connector</legend>
+                <label for="pocsag_enabled">Enabled:</label>
+                <input type="checkbox" id="pocsag_enabled"/>
+                </br>
+                <label for="pocsag_duplex_timeout">Duplex Timeout(in seconds): [recommended 90s]</label>
+                <input type="number" min="10" max="1200" id="pocsag_duplex_timeout"/>
+            </fieldset>
+
+            <hr>
+            <!--
+                <button>Check Settings</button>
+                <button>Save & Restart Dispatcher</button>
+            -->
+            <button onClick="saveConfigFromForm()">Save & Restart Dispatcher</button>
+            </br>
+            <b>Config Diff:</b>
+            <pre id="diffView"></pre>
+        </fieldset>
+        <hr>
+        <b>config.json</b>
+        <pre id="jsonView"></pre>
+    </body>
+    <script>
+        let config
+        async function loadConfigToForm() {
+            config = await $.getJSON('/config')
+            $('#jsonView').text(JSON.stringify(config, null, '\t'))
+            $('#amqpURL').val(config.general.amqp[0])
+            // connectors.dapnet
+            $('#dapnet_enabled').attr('checked', config.connectors.dapnet.enabled)
+            $('#dapnet_duplex_timeout').val(config.connectors.dapnet.duplexTimeout)
+            $('#dapnet_endpoint').val(config.connectors.dapnet.endpoint)
+            $('#dapnet_username').val(config.connectors.dapnet.username)
+            $('#dapnet_password').val(config.connectors.dapnet.password)
+            // connectors.dapnet
+            $('#lorawan_enabled').attr('checked', config.connectors.lorawan.enabled)
+            $('#lorawan_mqttserver').val(config.connectors.lorawan.mqttserver)
+            $('#lorawan_username').val(config.connectors.lorawan.username)
+            $('#lorawan_password').val(config.connectors.lorawan.password)
+
+            $('#pocsag_enabled').attr('checked', config.connectors.pocsag.enabled)
+            $('#pocsag_duplex_timeout').val(config.connectors.pocsag.duplexTimeout)
+        }
+        async function saveConfigFromForm() {
+            let newConfig = await $.getJSON('/config') // make a copy from the current dispatcher config
+            newConfig.general.amqp = [ $('#amqpURL').val() ]
+            // connectors.dapnet
+            newConfig.connectors.dapnet.enabled = $('#dapnet_enabled').prop('checked')
+            newConfig.connectors.dapnet.duplexTimeout = $('#dapnet_duplex_timeout').val()
+            newConfig.connectors.dapnet.endpoint = $('#dapnet_endpoint').val()
+            newConfig.connectors.dapnet.username = $('#dapnet_username').val()
+            newConfig.connectors.dapnet.password = $('#dapnet_password').val()
+            // connectors.dapnet
+            newConfig.connectors.lorawan.enabled = $('#lorawan_enabled').prop('checked')
+            newConfig.connectors.lorawan.mqttserver = $('#lorawan_mqttserver').val()
+            newConfig.connectors.lorawan.username = $('#lorawan_username').val()
+            newConfig.connectors.lorawan.password = $('#lorawan_password').val()
+
+            newConfig.connectors.pocsag.enabled = $('#pocsag_enabled').prop('checked')
+            newConfig.connectors.pocsag.duplexTimeout = $('#pocsag_duplex_timeout').val()
+
+            console.log(newConfig)
+            await $.ajax({
+                type: 'POST',
+                url: '/config',
+                data: JSON.stringify(newConfig),
+                contentType: 'application/json',
+                dataType: 'json'
+            })
+            $.post('/restart')
+            document.body.style = 'display:none'
+            setTimeout(() => window.location.reload(), 1e3)
+        }
+        function setLoRaWANMQTT(newMQTT) {
+            $('#lorawan_mqttserver').val(newMQTT)
+        }
+        $(document).ready(loadConfigToForm)
+    </script>
+</html>
