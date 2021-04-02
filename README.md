@@ -5,7 +5,11 @@
 Features Working rn:
 - Duplex and Simplex Processing
 - DAPNET integration
-- 
+- Configuration WebInterface (:3001)
+- API Test WebInterface (:3000)
+![image](https://user-images.githubusercontent.com/63829136/113425865-de7bc280-93d2-11eb-9e79-990d08b6e951.png)
+
+
 Features in W.I.P:
 - LoRaWAN progress 70%
 - ~~POCSAG only TX , no RX path~~
