@@ -29,11 +29,9 @@ class BirdySlim extends PagerDevice {
             if (!!data.rssi) stateSet.rssi = data.rssi
             // and if we have the 3 components of a GPS Block
             if (!!data.latitude && !!data.longitude && !!data.lastGPSAcquisition) stateSet.gps = {
-                gps: {
-                    lastGPSAcquisition: data.lastGPSAcquisition,
-                    latitude: data.latitude,
-                    longitude: data.longitude,
-                },
+                lastGPSAcquisition: data.lastGPSAcquisition,
+                latitude: data.latitude,
+                longitude: data.longitude,
             }
             stateSet.lastLoRaPacket = data.metadata
             /*if (!!data.metadata && !!data.metadata.uplink_message.rx_metadata) {
