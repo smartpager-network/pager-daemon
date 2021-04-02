@@ -108,7 +108,7 @@
             newConfig.general.amqp = [ $('#amqpURL').val() ]
             // connectors.dapnet
             newConfig.connectors.dapnet.enabled = $('#dapnet_enabled').prop('checked')
-            newConfig.connectors.dapnet.duplexTimeout = $('#dapnet_duplex_timeout').val()
+            newConfig.connectors.dapnet.duplexTimeout = parseInt($('#dapnet_duplex_timeout').val())
             newConfig.connectors.dapnet.endpoint = $('#dapnet_endpoint').val()
             newConfig.connectors.dapnet.username = $('#dapnet_username').val()
             newConfig.connectors.dapnet.password = $('#dapnet_password').val()
@@ -119,7 +119,7 @@
             newConfig.connectors.lorawan.password = $('#lorawan_password').val()
 
             newConfig.connectors.pocsag.enabled = $('#pocsag_enabled').prop('checked')
-            newConfig.connectors.pocsag.duplexTimeout = $('#pocsag_duplex_timeout').val()
+            newConfig.connectors.pocsag.duplexTimeout = parseInt($('#pocsag_duplex_timeout').val())
 
             console.log(newConfig)
             await $.ajax({
