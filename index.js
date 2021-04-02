@@ -47,6 +47,7 @@ app.post('/api/message/advanced', async (req, res) => {
 app.get('/api/message/status/:id', async (req, res) => { //TODO: make this fancy
     return res.json(types.MessageManager.messages[ req.params.id ])
 })
+
 app.get('/api/message/recent', async (req, res) => {
     let msgs = Object.values(types.MessageManager.messages)
     .sort((a,b) => b.date-a.date)
@@ -55,7 +56,7 @@ app.get('/api/message/recent', async (req, res) => {
 
 app.get('/api/message/ack/recv/:id', async (req, res) => {
     types.ConnectorRegistry.reportDelivered({ id: req.params.id }, 'http')
-    require('../MessageManager').attachMetadata(req.params.id, {
+    types.MessageManager.attachMetadata(req.params.id, {
         ack: 'recv',
         rssi: 0x00,
         date: new Date(),
@@ -65,7 +66,7 @@ app.get('/api/message/ack/recv/:id', async (req, res) => {
 })
 app.get('/api/message/ack/read/:id', async (req, res) => {
     types.MessageManager.markMessageRead(req.params.id)
-    require('../MessageManager').attachMetadata(req.params.id, {
+    types.MessageManager.attachMetadata(req.params.id, {
         ack: 'read',
         date: new Date(),
         metadata: { http: true },

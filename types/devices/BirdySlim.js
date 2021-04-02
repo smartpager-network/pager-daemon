@@ -50,7 +50,7 @@ class BirdySlim extends PagerDevice {
                             break;
                             case 'operational':
                                 require('../MessageManager').respondToMessage(data.msgid, data.operationalData)
-                                break;
+                            break;
                         }
                         // If we have had a Ack. Event, we should store some Metadata about it too
                         require('../MessageManager').attachMetadata(data.msgid, {

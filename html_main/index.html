@@ -69,10 +69,9 @@ Last LoRaWAN Packet:
                         </template>
                         <template v-slot:expanded-item="{ headers, item }">
                           <td :colspan="headers.length">
-                                <pre>
-Message ID: {{ item.id }}
-{{ item  }}
-                                </pre>
+                            <v-btn :disabled="item._routerData.recvAck" @click="apiACKMessage(item.id, 'recv')">manual RECV ACK</v-btn> 
+                            <v-btn :disabled="item._routerData.readAck" @click="apiACKMessage(item.id, 'read')">manual READ ACK</v-btn> 
+                                <pre>{{ item  }}</pre>
                           </td>
                         </template>
                     </v-data-table>
@@ -123,8 +122,10 @@ Message ID: {{ item.id }}
                 }
             },
             created() {
-                //this.refreshDevices()
+                this.refreshDevices()
                 setInterval(this.refreshDevices, 1e3)
+
+                this.refreshMessages()
                 setInterval(this.refreshMessages, 1e3)
             },
             methods: {
@@ -163,6 +164,11 @@ Message ID: {{ item.id }}
                     }, response => {
                     })
                 },
+                apiACKMessage(id, ackType) {
+                    this.$http.get(
+                        '/api/message/ack/'+[ackType, id].join('/')
+                    ).then(x=>{})
+                }
             }
 
         })
