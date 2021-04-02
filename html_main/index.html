@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dispatcher API Test</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+
+<body>
+    <div id="app">
+        <v-app>
+            <v-app-bar app>
+                <v-toolbar-title>
+                    Dispatcher API Test
+                </v-toolbar-title>
+            </v-app-bar>
+            <v-content>
+                <v-container> <!-- Device List-->
+                    <v-data-table must-sort :footer-props="footerProps" 
+                    :options="options" :loading="loadingD" loading-text="Loading... Please wait" 
+                    :headers="devicesHeaders" item-key="_id" :items="deviceListData"
+                    :single-expand="singleExpand" item-key="name" show-expand
+                    class="elevation-1">
+                        <template v-slot:top>
+                            <v-toolbar flat>
+                                <v-toolbar-title>Device List</v-toolbar-title>
+                            </v-toolbar>
+                        </template>
+                        <template v-slot:no-data>
+                            No Devices to show
+                        </template>
+                        <template v-slot:expanded-item="{ headers, item }">
+                          <td :colspan="headers.length">
+                            <section v-if="item.deviceType == 'birdyslim'">
+<pre>Device ID: {{ item.deviceID }}</pre>
+<pre v-if="!!item.lastSeen">Last Seen: {{ item.lastSeen }}</pre>
+<pre v-if="!!item.rssi">POCSAG RSSI: -{{ item.rssi }}dBm</pre>
+<pre v-if="!!item.gps">GPS Position:
+    Lat: {{ item.gps.latitude }}
+    Lng: {{ item.gps.longitude }}
+    Last Acquisition: {{ item.gps.lastGPSAcquisition }}m ago
+</pre>
+<pre v-if="!!item.lastLoRaPacket">
+Last LoRaWAN Packet:
+{{ item.lastLoRaPacket }}
+</pre>
+                            </section>
+                          </td>
+                        </template>
+                    </v-data-table>
+                </v-container>
+                <hr>
+                <v-container> <!-- Recent Messages -->
+                    <v-data-table must-sort :footer-props="footerProps" 
+                    :options="options" :loading="loadingM" loading-text="Loading... Please wait" 
+                    :headers="recentMessagesHeaders" item-key="id" :items="recentMessageListData" :items-per-page="5"
+                    :single-expand="singleExpandRM" item-key="name" show-expand
+                    class="elevation-1">
+                        <template v-slot:top>
+                            <v-toolbar flat>
+                                <v-toolbar-title>Recent Messages</v-toolbar-title>
+                            </v-toolbar>
+                        </template>
+                        <template v-slot:no-data>
+                            No Messages to show
+                        </template>
+                        <template v-slot:expanded-item="{ headers, item }">
+                          <td :colspan="headers.length">
+                                <pre>
+Message ID: {{ item.id }}
+{{ item  }}
+                                </pre>
+                          </td>
+                        </template>
+                    </v-data-table>
+                </v-container>
+            </v-content>
+        </v-app>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            vuetify: new Vuetify(),
+            http: { root: '/' },
+            data() {
+                return {
+                    loadingD: true,
+                    loadingM: true,
+                    search: '',
+                    expanded: [],
+                    singleExpand: true,
+                    singleExpandRM: true,
+                    options: {
+                        itemsPerPage: -1,
+                    },
+                    footerProps: {
+                        itemsPerPageOptions: [ -1, 5, 10, 20, 50, 75, 100 ]
+                    },
+
+                    deviceListData: [],
+                    devicesHeaders: [
+                        { text: 'ID', align: 'start', groupable: false, sortable: false, value: 'deviceID', },
+                        { text: 'Type', value: 'deviceType', groupable: true },
+                        { text: 'Last Seen', value: 'lastSeen', groupable: false },
+                    ],
+
+                    recentMessageListData: [],
+                    recentMessagesHeaders: [
+                        { text: 'ID', align: 'start', groupable: false, sortable: false, value: 'id', },
+                        { text: 'Type', value: 'type', groupable: true, sortable: false },
+                        { text: 'State', value: 'state', groupable: false, sortable: false },
+                        { text: 'Sent Date', value: 'date', groupable: false, sortable: false },
+                        { text: 'Sent Payload', value: '_payload', groupable: false, sortable: false },
+                    ],
+                    bulkImportText: '',
+                }
+            },
+            created() {
+                //this.refreshDevices()
+                setInterval(this.refreshDevices, 1e3)
+                setInterval(this.refreshMessages, 1e3)
+            },
+            methods: {
+                refreshDevices() {
+                    this.$http.get('/api/devices').then(response => {
+                        this.deviceListData = Object.keys(response.body).map(key => {
+                            const item = response.body[ key ]
+                            const keyData = key.split(':')
+                            item.deviceType = keyData[ 0 ], item.deviceID = keyData[ 1 ]
+
+                            //item.validStateText = this.validStateLUT[item.validState]
+                            return item
+                        })
+                        //this.accountData.sort((a,b) => a.validState - b.validState)
+                        this.loadingD = false
+                    }, response => {
+                    })
+                },
+                refreshMessages() {
+                    this.$http.get('/api/message/recent').then(response => {
+                        this.recentMessageListData = response.body.map(msg => {
+                            const stateArray = [msg._routerData.recvAck, msg._routerData.readAck, msg._routerData.response]
+                            // msg.state = [ msg.type, stateArray.filter(x=>x!==false).length, ...stateArray ]
+                            msg.state = '-'
+                            if (msg.type === 'duplex') {
+                                switch (stateArray.filter(x=>x!==false).length) {
+                                    case 0: msg.state = '📨 Sent'; break;
+                                    case 1: msg.state = '📬 Received'; break;
+                                    case 2: msg.state = '👀 Read'; break;
+                                    case 3: msg.state = '💬 Responded'; break;
+                                }
+                            }
+                            return msg
+                        })
+                        this.loadingM = false
+                    }, response => {
+                    })
+                },
+            }
+
+        })
+    </script>
+</body>
+
+</html>

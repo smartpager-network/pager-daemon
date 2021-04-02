@@ -27,6 +27,7 @@ types.DeviceRegistry.register(new types.devices.Skyper())
 const express = require('express')
 const app = express(), appConfig = express()
 app.use(express.json())
+app.use(express.static('html_main'))
 appConfig.use(express.json())
 appConfig.use(express.static('html'))
 
@@ -43,6 +44,11 @@ app.post('/api/message/advanced', async (req, res) => {
 app.get('/api/message/status/:id', async (req, res) => { //TODO: make this fancy
     return res.json(types.MessageManager.messages[ req.params.id ])
 })
+app.get('/api/message/recent', async (req, res) => {
+    let msgs = Object.values(types.MessageManager.messages)
+    .sort((a,b) => b.date-a.date)
+    return res.json(msgs)
+})
 
 app.get('/api/message/ack/recv/:id', async (req, res) => { //TODO: make this fancy
     types.ConnectorRegistry.reportDelivered({ id: req.params.id }, 'http')
@@ -55,6 +61,10 @@ app.get('/api/device/:id', async (req, res) => {
             ? Object.keys(types.DeviceRegistry.DeviceStates)
             : types.DeviceRegistry.DeviceStates[ req.params.id ]
     )
+})
+
+app.get('/api/devices', async (req, res) => {
+    return res.json(types.DeviceRegistry.DeviceStates)
 })
 
 /** CONFIG Routes */
