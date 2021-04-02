@@ -2,7 +2,7 @@
 ## Bash Library for sending out Pages and/or getting their State
 # dependencies: curl, jq
 
-# echo "Bericht" | send_page "duplex" "dapnet=dl-all#DXxxx"
+# echo "Bericht" | send_page "http://127.0.0.1:3000" "duplex" "birdyslim" "dapnet=dl-all#DXxxx"
 send_page() {
 	text=$(cat -)
 	endpoint=$1
