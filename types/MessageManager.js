@@ -16,6 +16,8 @@ class MessageManager {
             type,
             routingParams,
             payload,
+            _payload: payload,
+            date: new Date()
         }
         await require("./DeviceRegistry").Devices[ routingParams.device ].formatTX(msgObj)
         // console.log('finished msg obj is ', msgObj)
