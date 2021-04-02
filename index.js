@@ -50,8 +50,23 @@ app.get('/api/message/recent', async (req, res) => {
     return res.json(msgs)
 })
 
-app.get('/api/message/ack/recv/:id', async (req, res) => { //TODO: make this fancy
+app.get('/api/message/ack/recv/:id', async (req, res) => {
     types.ConnectorRegistry.reportDelivered({ id: req.params.id }, 'http')
+    require('../MessageManager').attachMetadata(req.params.id, {
+        ack: 'recv',
+        rssi: 0x00,
+        date: new Date(),
+        metadata: { http: true },
+    })
+    return res.json(true)
+})
+app.get('/api/message/ack/read/:id', async (req, res) => {
+    types.MessageManager.markMessageRead(req.params.id)
+    require('../MessageManager').attachMetadata(req.params.id, {
+        ack: 'read',
+        date: new Date(),
+        metadata: { http: true },
+    })
     return res.json(true)
 })
 
