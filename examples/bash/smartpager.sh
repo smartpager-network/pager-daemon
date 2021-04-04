@@ -36,8 +36,8 @@ is_msg_resp() {
 
 ENDPOINT="http://127.0.0.1:3000"
 #echo "Test" | send_page "$ENDPOINT" "duplex" "birdyslim" "pocsag=133701D" "test=123"
-#msgid=$(echo "Test" | send_page "$ENDPOINT" "duplex" "birdyslim" "pocsag=133701D" "test=123")
-msgid="Bznka"
+msgid=$(echo "Test" | send_page "$ENDPOINT" "duplex" "birdyslim" "pocsag=133701D" "test=123")
+#msgid="Bznka"
 msg_status "$ENDPOINT" "$msgid"
 
 
