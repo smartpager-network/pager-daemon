@@ -36,6 +36,9 @@
                           <td :colspan="headers.length">
                             <section v-if="item.deviceType == 'birdyslim'">
 <pre>Device ID: {{ item.deviceID }}</pre>
+<pre v-if="!!item.poweredOn">Powered On: {{ item.poweredOn }}</pre>
+<pre v-if="!!item.isCharging">Charging: {{ item.isCharging }}</pre>
+<pre v-if="!!item.battery">Battery: {{ item.battery }}</pre>
 <pre v-if="!!item.lastSeen">Last Seen: {{ item.lastSeen }}</pre>
 <pre v-if="!!item.rssi">POCSAG RSSI: -{{ item.rssi }}dBm</pre>
 <pre v-if="!!item.gps">GPS Position:

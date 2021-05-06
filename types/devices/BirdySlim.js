@@ -23,8 +23,11 @@ class BirdySlim extends PagerDevice {
             const stateSet = {
                 lastSeen: data.date
             }
-            // If we have a Battery Measurement, we should store it
+            // If we have a Battery Measurement or other Power Events, we should store it
             if (!!data.battery) stateSet.battery = data.battery/1e1
+            if (data.hasOwnProperty('isCharging')) stateSet.isCharging = data.isCharging
+            if (data.hasOwnProperty('poweredOn')) stateSet.poweredOn = data.poweredOn
+    
             // the same if we have an rssi measurement
             if (!!data.rssi) stateSet.rssi = data.rssi
             // and if we have the 3 components of a GPS Block
@@ -34,6 +37,7 @@ class BirdySlim extends PagerDevice {
                 longitude: data.longitude,
             }
             stateSet.lastLoRaPacket = data.metadata
+            console.log(data, stateSet)
             /*if (!!data.metadata && !!data.metadata.uplink_message.rx_metadata) {
                 const rx_metadata = data.metadata.uplink_message.rx_metadata
                 
@@ -61,12 +65,12 @@ class BirdySlim extends PagerDevice {
                         })
                     }
                     break;
-                    case 'sos':
-                        stateSet.sos = {
-                            sos: data.sos,
-                            date: data.date,
-                        }
-                    break;
+                case 'sos':
+                    stateSet.sos = {
+                        sos: data.sos,
+                        date: data.date,
+                    }
+                break;
             }
             require('../DeviceRegistry').stateSet(this.name, data.device_id, stateSet) 
             return true

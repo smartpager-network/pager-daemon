@@ -25,7 +25,7 @@ class LoRaWANConnector extends Connector {
   async onMQTTMessage(topic, message) {
     //if (topic.indexOf('/up') > -1) return
     const json = JSON.parse(Buffer.from(message).toString('utf-8'))
-    console.log(topic, json)
+    console.log(topic)
     if (!!json.uplink_message) { // TTN v3
       this.connectorRegistry.events.emit('response', {
         ...json.uplink_message.decoded_payload,
