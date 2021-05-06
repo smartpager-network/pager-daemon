@@ -1,3 +1,4 @@
+const events = require('events')
 const ConnectorRegistry = require("./ConnectorRegistry")
 const config = require('../config.json')
 const md5 = require('md5')
@@ -5,6 +6,7 @@ const md5 = require('md5')
 class MessageManager {
     constructor() {
         this.messages = {}
+        this.events = new events.EventEmitter()
         ConnectorRegistry.events.on('msg:status', this.msgStatus.bind(this))
     }
     async New(type, routingParams, payload) {
@@ -45,6 +47,7 @@ class MessageManager {
         if (status === 'delivered') this.messages[ msgId ]._routerData.recvAck = true
         //this.Deliver(msgId)
         console.log(msgId, uuid, 'status is', status)
+        this.events.emit('msgmgr:event', 'status', [msgId, uuid, status])
     }
     async Deliver(msgId) {
         if (this.messages[ msgId ].type === 'duplex')
@@ -58,11 +61,20 @@ class MessageManager {
         }
         this.messages[ msgId ]._routerData.metadata.push(metadata)
     }
+    attachMenudata(msgId, menu) {
+        this.messages[ msgId ]._routerData.menu = menu
+    }
+
     markMessageRead(msgId) {
         this.messages[ msgId ]._routerData.readAck = true
+        this.events.emit('msgmgr:event', 'read', msgId)
     }
     respondToMessage(msgId, response) {
         this.messages[ msgId ]._routerData.response = response
+        this.events.emit('msgmgr:event', 'response', [msgId, response])
+        if (!!this.messages[ msgId ]._routerData.menu) {
+            //TODO: nice handling
+        }
     }
     _clearEventHandlers4MsgID(msgId) {
         ConnectorRegistry.events.removeAllListeners(`msg:status:${ msgId }:delivered`)

@@ -28,7 +28,9 @@ types.DeviceRegistry.register(new types.devices.BirdySlim())
 types.DeviceRegistry.register(new types.devices.Skyper())
 
 const express = require('express')
+const { MessageManager } = require('./types')
 const app = express(), appConfig = express()
+const appServer = require('http').createServer(app)
 app.use(express.json())
 app.use(express.static('html_main'))
 appConfig.use(express.json())
@@ -42,6 +44,26 @@ app.post('/api/message/advanced', async (req, res) => {
     let id = await types.MessageManager.New(req.body.type, req.body.routing, req.body.payload)
     await types.MessageManager.Deliver(id)
     return res.json(id)
+})
+
+app.post('/api/message/advanced/menu', async (req, res) => {
+    if (!req.body.payload) return res.status(500).json("ERROR: no msg payload")
+    if (!req.body.options) return res.status(500).json("ERROR: no msg options")
+    if (!req.body.routing) return res.status(500).json("ERROR: no msg routing")
+
+    let id = await types.MessageManager.New('duplex', req.body.routing, 
+        req.body.payload + '\n\n' + Object.keys(req.body.options).map((key, index) => {
+            return `[${ index + 1 }] ${ req.body.options[key].txt }`
+        }).join('\n')
+    )
+    types.MessageManager.attachMenudata(id, {
+        options: req.body.options,
+    })
+    await types.MessageManager.Deliver(id)
+    return res.json(id)
+})
+app.get('/api/message/status/:id/menu', async (req, res) => { //TODO: make this fancy
+    return res.json(types.MessageManager.messages[ req.params.id ])
 })
 
 app.get('/api/message/status/:id', async (req, res) => { //TODO: make this fancy
@@ -86,6 +108,16 @@ app.get('/api/devices', async (req, res) => {
     return res.json(types.DeviceRegistry.DeviceStates)
 })
 
+const io = require('socket.io')(appServer)
+io.on("connection", socket => { 
+    console.log('new socket.io connection')
+})
+
+types.MessageManager.events.on('msgmgr:event', (eventType, eventData) => {
+    console.log(eventType, eventData)
+    io.sockets.emit('msgmgr:event', eventType, eventData)
+})
+
 /** CONFIG Routes */
 
 appConfig.get('/config', async (req, res) => {
@@ -113,7 +145,7 @@ memstats()
 setInterval(memstats, 10e3)*/
 
 
-app.listen(config.general.port)
+appServer.listen(config.general.port)
 if (config.general.configWebInterfaceEnabled === true) {
     appConfig.listen(config.general.configPort)
 }

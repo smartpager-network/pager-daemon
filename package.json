@@ -25,6 +25,7 @@
     "express": "^4.17.1",
     "md5": "^2.3.0",
     "mqtt": "^4.2.6",
-    "querystring": "^0.2.1"
+    "querystring": "^0.2.1",
+    "socket.io": "^4.0.2"
   }
 }
