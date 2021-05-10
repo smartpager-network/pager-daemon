@@ -48,6 +48,9 @@
                 <label for="lorawan_enabled">Enabled:</label>
                 <input type="checkbox" id="lorawan_enabled"/>
                 </br>
+                <label for="lorawan_duplex_timeout">Duplex Timeout(in seconds) : recommended value equals LPWAN-FetchTime</label>
+                <input type="number" min="10" max="9000" id="lorawan_duplex_timeout"/>
+                </br>
                 <label for="lorawan_mqttserver">MQTT Endpoint:</label>
                 <input type="text" id="lorawan_mqttserver"/>
                 <button onClick="setLoRaWANMQTT('mqtt://eu.thethings.network:1883')">Preset TTNv2</button>
@@ -104,6 +107,7 @@
             $('#dapnet_password').val(config.connectors.dapnet.password)
             // connectors.dapnet
             $('#lorawan_enabled').attr('checked', config.connectors.lorawan.enabled)
+            $('#lorawan_duplex_timeout').val(config.connectors.lorawan.duplexTimeout)
             $('#lorawan_mqttserver').val(config.connectors.lorawan.mqttserver)
             $('#lorawan_username').val(config.connectors.lorawan.username)
             $('#lorawan_password').val(config.connectors.lorawan.password)
@@ -125,6 +129,7 @@
             newConfig.connectors.dapnet.password = $('#dapnet_password').val()
             // connectors.lorawan
             newConfig.connectors.lorawan.enabled = $('#lorawan_enabled').prop('checked')
+            newConfig.connectors.lorawan.duplexTimeout = parseInt($('#lorawan_duplex_timeout').val())
             newConfig.connectors.lorawan.mqttserver = $('#lorawan_mqttserver').val()
             newConfig.connectors.lorawan.username = $('#lorawan_username').val()
             newConfig.connectors.lorawan.password = $('#lorawan_password').val()

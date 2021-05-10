@@ -1,5 +1,6 @@
 const Connector = require("./Connector")
 const config = require('../../config.json')
+const md5 = require('md5')
 
 class LoRaWANConnector extends Connector {
   // this is optimized for only receiving LoRa uplink Messages (from Birdy Pagers)
@@ -21,6 +22,36 @@ class LoRaWANConnector extends Connector {
     await this.client.subscribe(`v3/${ config.connectors.lorawan.username }/devices/#`)
     await this.client.subscribe(`${ config.connectors.lorawan.username }/devices/#`)
     console.log('[lorawan] subscribed')
+  }
+  
+  async transmitMessage(msg, params) {
+    const UUID = this.name+':'+md5(JSON.stringify([this.name,...params]))
+    if (params.length < 1) return false
+    const target = params[0]
+    if (target.split('#').length !== 2) throw 'No valid LoRaWAN Parameter <deviceID#fPort>'
+    const deviceID = target.split('#')[ 0 ], fPort = target.split('#')[ 1 ]
+    const mqttTopic = `v3/${ config.connectors.lorawan.username }/devices/${ deviceID }/down/push`
+    const mqttPayload = {
+      downlinks:[
+        {
+          f_port: fPort,
+          frm_payload: Buffer.from(msg.payload, 'utf-8').toString('base64'),
+          priority: "NORMAL",
+        }
+      ]
+    }
+
+    console.log (mqttTopic, mqttPayload)
+    this.client.publish(mqttTopic, JSON.stringify(mqttPayload))
+    .then(() => {
+      this.connectorRegistry.reportState(msg, UUID, 'routed')
+      return true
+    })
+    .catch((err) => {
+      console.error(err)
+      this.connectorRegistry.reportFail(msg, UUID)
+      return false
+    })
   }
   async onMQTTMessage(topic, message) {
     //if (topic.indexOf('/up') > -1) return

@@ -22,6 +22,7 @@
 		},
         "lorawan": {
             "enabled": true,
+			"duplexTimeout": 1800,
             "mqttserver": "mqtt://eu.thethings.network:1883",
             "username": "TTN_v2_APP_ID___OR___v3_MQTT_Username",
             "password": "TTN_v2_APP_APIKEY__OR__TTN_v3_MQTT_Password"
