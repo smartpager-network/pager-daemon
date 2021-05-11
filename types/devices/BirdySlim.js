@@ -71,6 +71,16 @@ class BirdySlim extends PagerDevice {
                         date: data.date,
                     }
                 break;
+
+                case 'status':
+                case 'cannedMessage':
+                case 'low_battery':
+                case 'power':
+                case 'battery':
+                case 'sos':
+                case 'gps':
+                    require('../DeviceRegistry').deviceEvent(this.name, data.device_id, data)
+                break;
             }
             require('../DeviceRegistry').stateSet(this.name, data.device_id, stateSet) 
             return true

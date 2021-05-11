@@ -113,11 +113,15 @@ io.on("connection", socket => {
     console.log('new socket.io connection')
 })
 
-types.MessageManager.events.on('msgmgr:event', (eventType, eventData) => {
+types.MessageManager.events.on('event', (eventType, eventData) => {
     console.log(eventType, eventData)
     io.sockets.emit('msgmgr:event', eventType, eventData)
 })
 
+types.DeviceRegistry.events.on('event', (deviceType, deviceId, eventData) => {
+    console.log(deviceType, deviceId, eventData)
+    io.sockets.emit('device:event', deviceType, deviceId, eventData)
+})
 /** CONFIG Routes */
 
 appConfig.get('/config', async (req, res) => {

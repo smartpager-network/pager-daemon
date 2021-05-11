@@ -2,7 +2,11 @@ const events = require('events')
 const ConnectorRegistry = require("./ConnectorRegistry")
 const config = require('../config.json')
 const md5 = require('md5')
+const axios = require('axios')
 
+function clamp(v,min,max) {
+    return Math.max(Math.min(v,min),max)
+}
 class MessageManager {
     constructor() {
         this.messages = {}
@@ -47,7 +51,7 @@ class MessageManager {
         if (status === 'delivered') this.messages[ msgId ]._routerData.recvAck = true
         //this.Deliver(msgId)
         console.log(msgId, uuid, 'status is', status)
-        this.events.emit('msgmgr:event', 'status', [msgId, uuid, status])
+        this.events.emit('event', 'status', [msgId, uuid, status])
     }
     async Deliver(msgId) {
         if (this.messages[ msgId ].type === 'duplex')
@@ -67,13 +71,20 @@ class MessageManager {
 
     markMessageRead(msgId) {
         this.messages[ msgId ]._routerData.readAck = true
-        this.events.emit('msgmgr:event', 'read', msgId)
+        this.events.emit('event', 'read', msgId)
     }
     respondToMessage(msgId, response) {
         this.messages[ msgId ]._routerData.response = response
-        this.events.emit('msgmgr:event', 'response', [msgId, response])
+        this.events.emit('event', 'response', [msgId, response])
         if (!!this.messages[ msgId ]._routerData.menu) {
-            //TODO: nice handling
+            const menuOptions = this.messages[ msgId ]._routerData.menu
+            const selectedMenu = menuOptions[ Object.keys(menuOptions)[
+                clamp(+response-1, 0, Object.keys(menuOptions).length)
+            ] ]
+            this.events.emit('event', 'menu', [msgId, response, selectedMenu])
+            if (!!menuOptions.url) {
+                axios.get(menuOptions.url).then( () => false )
+            }
         }
     }
     _clearEventHandlers4MsgID(msgId) {
