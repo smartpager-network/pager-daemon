@@ -5,7 +5,9 @@ const md5 = require('md5')
 const axios = require('axios')
 
 function clamp(v,min,max) {
-    return Math.max(Math.min(v,min),max)
+    if (v < min) return min
+    if (v > max) return max
+    return v
 }
 class MessageManager {
     constructor() {
@@ -76,14 +78,16 @@ class MessageManager {
     respondToMessage(msgId, response) {
         this.messages[ msgId ]._routerData.response = response
         this.events.emit('event', 'response', [msgId, response])
-        if (!!this.messages[ msgId ]._routerData.menu) {
-            const menuOptions = this.messages[ msgId ]._routerData.menu
+        if (!!this.messages[ msgId ]._routerData.menu && !!this.messages[ msgId ]._routerData.menu.options) {
+            
+            const menuOptions = this.messages[ msgId ]._routerData.menu.options
+            console.log(this.messages[ msgId ]._routerData.menu, menuOptions, parseInt(response) - 1, clamp(-1+response, 0, Object.keys(menuOptions).length))
             const selectedMenu = menuOptions[ Object.keys(menuOptions)[
-                clamp(+response-1, 0, Object.keys(menuOptions).length)
+                clamp(parseInt(response) - 1, 0, Object.keys(menuOptions).length)
             ] ]
             this.events.emit('event', 'menu', [msgId, response, selectedMenu])
-            if (!!menuOptions.url) {
-                axios.get(menuOptions.url).then( () => false )
+            if (!!selectedMenu && !!selectedMenu.url) {
+                axios.get(selectedMenu.url).then( () => false )
             }
         }
     }

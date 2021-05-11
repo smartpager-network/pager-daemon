@@ -53,7 +53,7 @@ app.post('/api/message/advanced/menu', async (req, res) => {
 
     let id = await types.MessageManager.New('duplex', req.body.routing, 
         req.body.payload + '\n\n' + Object.keys(req.body.options).map((key, index) => {
-            return `[${ index + 1 }] ${ req.body.options[key].txt }`
+            return `[${ index + 1 }]${ req.body.options[key].sep || ' ' }${ req.body.options[key].txt }`
         }).join('\n')
     )
     types.MessageManager.attachMenudata(id, {
