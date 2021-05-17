@@ -3,6 +3,7 @@ class Connector {
     this.amqpConnMngr = amqpConnMngr
     this.name = "_base"
     this.duplexCapable = false
+    this.supportBOSkrypt = false
   }
   Hook (connectorRegistry) {
     this.connectorRegistry = connectorRegistry

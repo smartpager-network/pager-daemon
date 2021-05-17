@@ -44,7 +44,14 @@
                     "webhook": false,
                     "mqtt": false
                 }
-            }
+            },
+			"boskrypt": {
+				"enabled": true,
+				"keys": {
+					"42001A": "6e6a31fdb56cfd03f52599dec12d75daae0fb027d791b109c872a6ba8fffa403",
+					"42001B": "da281a96c138ca40c810157c75c38f27c08671ee346e2bc7d9be8f7f0b2c5c38"
+				}
+			}
         }
     }
 }

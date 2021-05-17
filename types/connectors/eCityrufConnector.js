@@ -8,6 +8,7 @@ class eCityrufConnector extends Connector {
     super(amqpConnMngr)
     this.name = "ecityruf"
     this.duplexCapable = false
+    this.supportBOSkrypt = true
   }
   async transmitMessage(msg, params) {
       const UUID = this.name+':'+md5(JSON.stringify([this.name,...params]))

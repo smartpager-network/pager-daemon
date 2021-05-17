@@ -8,6 +8,7 @@ class BirdySlim extends PagerDevice {
     constructor () {
         super()
         this.duplex = true
+        this.supportBOSkrypt = true
         this.name = "birdyslim"
     } 
     RandID() {
